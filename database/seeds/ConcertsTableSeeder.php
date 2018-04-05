@@ -21,7 +21,8 @@ class ConcertsTableSeeder extends Seeder
             'city'                   => "Laraville",
             'state'                  => "ON",
             'zip'                    => "19276",
-            'date'                   => Carbon::today()->addMonths(6)->hour(19)
+            'date'                   => Carbon::today()->addMonths(3)->hour(19),
+            'published_at'           => Carbon::today()->addMonths(6)->hour(19),
         ]);
     }
 }

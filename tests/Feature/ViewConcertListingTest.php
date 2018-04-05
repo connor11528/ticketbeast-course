@@ -16,16 +16,17 @@ class ViewConcertListingTest extends TestCase
     {
         // Arrange
         $concert = Concert::create([
-            'title' => 'The Red Chord',
-            'subtitle' => 'with Animosity and Lethargy',
-            'date' => Carbon::parse('December 13, 2018 8:00pm'),
-            'ticket_price' => 3250,
-            'venue' => 'The Mosh Pit',
-            'venue_address' => '123 Example Lane',
-            'city' => 'San Francisco',
-            'state' => 'CA',
-            'zip' => '17916',
-            'additional_information' => 'For tickets call 415-717-5557'
+           'title'                  => 'The Red Chord',
+           'subtitle'               => 'with Animosity and Lethargy',
+           'date'                   => Carbon::parse('December 13, 2018 8:00pm'),
+           'ticket_price'           => 3250,
+           'venue'                  => 'The Mosh Pit',
+           'venue_address'          => '123 Example Lane',
+           'city'                   => 'San Francisco',
+           'state'                  => 'CA',
+           'zip'                    => '17916',
+           'additional_information' => 'For tickets call 415-717-5557',
+           'published_at'           => Carbon::parse('December 06, 2018 8:00pm')
         ]);
 
         // Act
@@ -41,5 +42,15 @@ class ViewConcertListingTest extends TestCase
         $this->see('123 Example Lane');
         $this->see('San Francisco, CA 17916');
         $this->see('For tickets call 415-717-5557');
+    }
+
+    /** @test */
+    function user_connot_view_unpublished_concert_listings()
+    {
+        $concert = factory(Concert::class)->create([
+            'published_at' => null
+        ]);
+        $this->get('/concerts' . $concert->id);
+        $this->assertResponseStatus(404);
     }
 }
