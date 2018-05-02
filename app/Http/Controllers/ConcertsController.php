@@ -46,7 +46,8 @@ class ConcertsController extends Controller
      */
     public function show($id)
     {
-        $concert = Concert::whereNotNull('published_at')->findOrFail($id);
+        // only show concerts that are published (where published_at is true)
+        $concert = Concert::published()->findOrFail($id);
         return view('concerts.show', compact('concert'));
     }
 

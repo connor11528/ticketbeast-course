@@ -12,7 +12,7 @@ class ViewConcertListingTest extends TestCase
     use DatabaseMigrations;
 
     /** @test */
-    public function user_can_view_a_concert_listing()
+    public function user_can_view_a_published_concert_listing()
     {
         // Arrange
         $concert = Concert::create([
@@ -45,7 +45,7 @@ class ViewConcertListingTest extends TestCase
     }
 
     /** @test */
-    function user_connot_view_unpublished_concert_listings()
+    function user_cannot_view_unpublished_concert_listings()
     {
         $concert = factory(Concert::class)->create([
             'published_at' => null
