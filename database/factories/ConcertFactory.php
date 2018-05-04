@@ -3,7 +3,7 @@
 use Carbon\Carbon;
 use Faker\Generator as Faker;
 
-$factory->define(App\Concert::class, function (Faker $faker) {
+$factory->define(App\Concert::class, function ($faker) {
     return [
         'title' => 'Example Band',
         'subtitle' => 'with The Fake Openers',

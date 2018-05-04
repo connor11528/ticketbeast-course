@@ -12,7 +12,7 @@ class ConcertsTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Concert::class, 1)->create([
+        factory(App\Concert::class, 1)->states('published')->create([
             'title'                  => "Slayer",
             'subtitle'               => "with Forbidden and Testament",
             'additional_information' => 'some other content',
@@ -22,7 +22,7 @@ class ConcertsTableSeeder extends Seeder
             'state'                  => "ON",
             'zip'                    => "19276",
             'date'                   => Carbon::today()->addMonths(3)->hour(19),
-            'published_at'           => Carbon::today()->addMonths(6)->hour(19),
+            'ticket_price'           => 3250
         ]);
     }
 }
