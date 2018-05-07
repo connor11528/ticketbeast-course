@@ -16,8 +16,13 @@ class Order extends Model
     public function cancel()
     {
         foreach($this->tickets as $ticket){
-            $ticket->update(['order_id' => null]);
+            $ticket->release();
         }
         $this->delete();
+    }
+
+    public function ticketQuantity()
+    {
+        return $this->tickets()->count();
     }
 }
