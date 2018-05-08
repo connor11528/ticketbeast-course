@@ -24,4 +24,9 @@ class Reservation extends Model
             $ticket->release();
         }
     }
+
+    public function tickets()
+    {
+        return $this->tickets;
+    }
 }
