@@ -8,7 +8,7 @@ use App\Exceptions\NotEnoughTicketsException;
 class Concert extends Model
 {
     protected $guarded = [];
-    protected $dates = ['date'];
+    protected $dates   = ['date'];
 
     public function getFormattedDateAttribute()
     {
@@ -22,7 +22,7 @@ class Concert extends Model
 
     public function getTicketPriceInDollarsAttribute()
     {
-        return number_format($this->ticket_price /100, 2);
+        return number_format($this->ticket_price / 100, 2);
     }
 
     public function scopePublished($query)
@@ -42,18 +42,30 @@ class Concert extends Model
 
     public function orderTickets($email, $ticketQuantity)
     {
-        $tickets = $this->tickets()->available()->take($ticketQuantity)->get();
+        $tickets = $this->findTickets($ticketQuantity);
+        return $this->createOrder($email, $tickets);
+    }
 
-        if($tickets->count() < $ticketQuantity){
+    public function findTickets($quantity)
+    {
+        $tickets = $this->tickets()->available()->take($quantity)->get();
+        if ($tickets->count() < $quantity) {
             throw new NotEnoughTicketsException;
         }
 
-        $order   = $this->orders()->create([
-            'email'  => $email,
-            'amount' => $ticketQuantity * $this->ticket_price
-        ]);
+        return $tickets;
+    }
 
-        foreach($tickets as $ticket){
+    public function createOrder($email, $tickets)
+    {
+        $order = $this->orders()->create(
+            [
+                'email'  => $email,
+                'amount' => $tickets->count() * $this->ticket_price,
+            ]
+        );
+
+        foreach ($tickets as $ticket) {
             $order->tickets()->save($ticket);
         }
 
@@ -62,9 +74,10 @@ class Concert extends Model
 
     public function addTickets($quantity)
     {
-        foreach(range(1, $quantity) as $i){
+        foreach (range(1, $quantity) as $i) {
             $this->tickets()->create([]);
         }
+
         return $this;
     }
 
