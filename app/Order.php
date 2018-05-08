@@ -26,6 +26,22 @@ class Order extends Model
         $this->delete();
     }
 
+    public static function forTickets($tickets, $email, $amount)
+    {
+        $order = self::create(
+            [
+                'email'  => $email,
+                'amount' => $amount,
+            ]
+        );
+
+        foreach ($tickets as $ticket) {
+            $order->tickets()->save($ticket);
+        }
+
+        return $order;
+    }
+
     public function ticketQuantity()
     {
         return $this->tickets()->count();
