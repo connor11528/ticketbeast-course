@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Ticket extends Model
 {
@@ -10,7 +11,7 @@ class Ticket extends Model
 
     public function scopeAvailable($query)
     {
-        return $query->whereNull('order_id');
+        return $query->whereNull('order_id')->whereNull('reserved_at');
     }
 
     public function release()
@@ -26,5 +27,10 @@ class Ticket extends Model
     public function getPriceAttribute()
     {
         return $this->concert->ticket_price;
+    }
+
+    public function reserve()
+    {
+        $this->update(['reserved_at' => Carbon::now()]);
     }
 }

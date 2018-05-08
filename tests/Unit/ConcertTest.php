@@ -5,12 +5,14 @@ namespace Tests\Unit;
 use App\Concert;
 use App\Exceptions\NotEnoughTicketsException;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ConcertTest extends TestCase
 {
     use DatabaseMigrations;
+    use WithoutMiddleware;
 
     /** @test */
     function can_get_formatted_date()
@@ -113,5 +115,49 @@ class ConcertTest extends TestCase
         }
 
         $this->fail('Order succeeded even though there were not enough tickets remaining');
+    }
+
+    /** @test */
+    function can_reserve_available_tickets()
+    {
+        $concert = factory(Concert::class)->create()->addTickets(3);
+        $this->assertEquals(3, $concert->ticketsRemaining());
+
+        $reservedTickets = $concert->reserveTickets(2);
+
+        $this->assertCount(2, $reservedTickets);
+        $this->assertEquals(1, $concert->ticketsRemaining());
+    }
+
+    /** @test */
+    function cannot_reserve_tickets_that_have_already_been_purchased()
+    {
+        $concert = factory(Concert::class)->create()->addTickets(3);
+        $concert->orderTickets('jane@example.com', 2);
+
+        try {
+            $concert->reserveTickets(2);
+        } catch (NotEnoughTicketsException $e) {
+                $this->assertEquals(1, $concert->ticketsRemaining());
+                return;
+        }
+
+        $this->fail("Reserving tickets succeeded even though the tickets were already sold.");
+    }
+
+    /** @test */
+    function cannot_reserve_tickets_that_have_already_been_reserved()
+    {
+            $concert = factory(Concert::class)->create()->addTickets(3);
+            $concert->reserveTickets(2);
+
+            try {
+                    $concert->reserveTickets(2);
+                } catch (NotEnoughTicketsException $e) {
+                    $this->assertEquals(1, $concert->ticketsRemaining());
+                    return;
+        }
+
+        $this->fail("Reserving tickets succeeded even though the tickets were already reserved.");
     }
 }
