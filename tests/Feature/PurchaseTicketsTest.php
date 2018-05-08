@@ -45,13 +45,14 @@ class PurchaseTicketsTest extends TestCase
 
         // Act
         $this->orderTickets($concert, [
-            'email' => 'john@example.com',
+            'email'           => 'john@example.com',
             'ticket_quantity' => 3,
-            'payment_token' => $this->paymentGateway->getValidTestToken()
+            'payment_token'   => $this->paymentGateway->getValidTestToken()
         ]);
 
         // Assert
         $this->assertResponseStatus(201);
+
         $this->assertEquals(9750, $this->paymentGateway->totalCharges());
 
         $this->assertTrue($concert->hasOrderFor('john@example.com'));

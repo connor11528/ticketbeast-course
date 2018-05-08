@@ -12,19 +12,11 @@ class ConcertOrdersController extends Controller
 {
     private $paymentGateway;
 
-    /**
-     * ConcertOrdersController constructor.
-     *
-     * @param PaymentGateway $paymentGateway
-     */
     public function __construct(PaymentGateway $paymentGateway)
     {
         $this->paymentGateway = $paymentGateway;
     }
 
-    /**
-     * @param $concertId
-     */
     public function store($concertId)
     {
         $concert = Concert::published()->findOrFail($concertId);
@@ -37,7 +29,7 @@ class ConcertOrdersController extends Controller
             $order = $concert->orderTickets(request('email'), request('ticket_quantity'));
             $this->paymentGateway->charge(request('ticket_quantity') * $concert->ticket_price, request('payment_token'));
 
-            return response()->json([], 201);
+            return response()->json($order, 201);
         } catch (PaymentFailedException $e) {
             $order->cancel();
             return response()->json([], 422);
