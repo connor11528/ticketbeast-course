@@ -28,14 +28,8 @@ class ConcertOrdersController extends Controller
            'payment_token'   => ['required']
         ]);
         try {
-            // Find some tickets
             $reservation = $concert->reserveTickets(request('ticket_quantity'), request('email'));
-
-            // Charge the customer for the tickets
-            $this->paymentGateway->charge($reservation->totalCost(), request('payment_token'));
-
-            // Charge the customer for the tickets
-            $order = Order::forTickets($reservation->tickets(), $reservation->email(), $reservation->totalCost());
+            $order = $reservation->complete($this->paymentGateway, request('payment_token'));
 
             return response()->json($order, 201);
         } catch (PaymentFailedException $e) {

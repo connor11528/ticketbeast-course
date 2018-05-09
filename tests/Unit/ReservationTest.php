@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Billing\FakePaymentGateway;
 use App\Concert;
 use App\Reservation;
 use App\Ticket;
@@ -59,16 +60,17 @@ class ReservationTest extends TestCase
     /** @test */
     function completing_a_reservation()
     {
-        $concert  = factory(Concert::class)->create(['ticket_price' => 1200]);
-        $tickets = factory(Ticket::class, 3)->create(['concert_id' => $concert->id]);
-        $reservation = new Reservation($tickets, 'john@example.com');
+        $concert        = factory(Concert::class)->create(['ticket_price' => 1200]);
+        $tickets        = factory(Ticket::class, 3)->create(['concert_id' => $concert->id]);
+        $reservation    = new Reservation($tickets, 'john@example.com');
+        $paymentGateway = new FakePaymentGateway;
 
-        $order = $reservation->complete();
+        $order = $reservation->complete($paymentGateway, $paymentGateway->getValidTestToken());
 
         // check that calling reservation->complete creates an order
         $this->assertEquals('john@example.com', $order->email);
         $this->assertEquals(3, $order->ticketQuantity());
         $this->assertEquals(3600, $order->amount);
-
+        $this->assertEquals(3600, $paymentGateway->totalCharges());
     }
 }
