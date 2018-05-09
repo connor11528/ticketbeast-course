@@ -36,4 +36,9 @@ class Reservation extends Model
     {
         return $this->email;
     }
+
+    public function complete()
+    {
+        return Order::forTickets($this->tickets(), $this->email(), $this->totalCost());
+    }
 }
