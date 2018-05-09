@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Reservation extends Model
 {
     private $tickets;
+    private $email;
 
-    public function __construct($tickets)
+    public function __construct($tickets, $email)
     {
         $this->tickets = $tickets;
+        $this->email   = $email;
     }
 
     public function totalCost()
@@ -28,5 +30,10 @@ class Reservation extends Model
     public function tickets()
     {
         return $this->tickets;
+    }
+
+    public function email()
+    {
+        return $this->email;
     }
 }
